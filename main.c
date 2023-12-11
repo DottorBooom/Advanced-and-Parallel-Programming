@@ -33,6 +33,25 @@ int argv_check(int argc, char * argv[], int * a){
     return 0;
 }
 
+float * linspace(float a, float b, int n)
+{
+
+    float * u = (float *)malloc(n*sizeof(float));
+    float c;
+    
+    if(n < 2 || u == 0)
+        return (void*)0;
+    
+    c = (b - a)/(n - 1);
+
+    for(int i = 0; i < n - 1; ++i)
+        u[i] = a + i*c;
+
+    u[n - 1] = b;
+
+    return u;
+}
+
 int main(int argc, char * argv[]){
 
     printf("Program started. Computing input arguments...");
@@ -48,5 +67,15 @@ int main(int argc, char * argv[]){
         printf("+ M = %d\n+ Number of rows = %d\n+ Number of columns = %d\n",components[0],components[1],components[2]);
     }
 
+    printf("Creating an equalspaced array for real part and immaginary part...");
+    float * r_nums = linspace(-2,1,components[1]);
+    float * r_cols = linspace(-1,1,components[2]);
+    if(r_nums == 0 || r_cols == 0){
+        printf("...program end with error -5\n");
+        return 0;
+    }
+    printf("...arrays line spaced correctly.\n");
+
+    printf("End of the program.\n");
     return 0;
 }
