@@ -1,5 +1,5 @@
 # Advanced and Parallel Programming
-![Static Badge](https://img.shields.io/badge/Version-0.0.0-limegreen) ![Static Badge](https://img.shields.io/badge/VSCode-%23007ACC?logo=visualstudiocode) ![Static Badge](https://img.shields.io/badge/Version-17.0.0-blue?logo=C)
+![Static Badge](https://img.shields.io/badge/Version-0.1.0-limegreen) ![Static Badge](https://img.shields.io/badge/VSCode-%23007ACC?logo=visualstudiocode) ![Static Badge](https://img.shields.io/badge/Version-17.0.0-blue?logo=C)
 
 
 Repository dedicated to the course of 'Advanced and Parallel Programming' taught by Professor Luca Manzoni in the undergraduate degree of "Artificial Intelligence and Data Analytics" at the University of Trieste, during the academic year 2023/2024.
