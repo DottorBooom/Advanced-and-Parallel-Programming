@@ -1,5 +1,8 @@
 # Advanced and Parallel Programming
-Repository dedicated to the course of 'Advanced and Parallel Programming' taught by Professor Luca Manzoni in the undergraduate degree of 'Artificial Intelligence and Data Analytics' at the University of Trieste, during the academic year 2023/2024.
+![Static Badge](https://img.shields.io/badge/Version-0.0.0-limegreen) ![Static Badge](https://img.shields.io/badge/VSCode-%23007ACC?logo=visualstudiocode) ![Static Badge](https://img.shields.io/badge/Version-17.0.0-blue?logo=C)
+
+
+Repository dedicated to the course of 'Advanced and Parallel Programming' taught by Professor Luca Manzoni in the undergraduate degree of "Artificial Intelligence and Data Analytics" at the University of Trieste, during the academic year 2023/2024.
 ## Description
 It consists of a project divided into 2 parts: 
 + the first part entirely in C, involves calculating values belonging to the Mandelbrot set and drawing its fractal (in grayscale);
