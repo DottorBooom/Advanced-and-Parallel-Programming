@@ -6,40 +6,30 @@
 
 #include "mandelbrot.h"
 
-float * mandelbrot_set(int * x, float * row, float * col, float r){
+float * mandelbrot_set(int * components, float * y, float * x){
 
-    float * min_n = (float *)malloc(x[1]*x[2]*sizeof(float));
+    float * min_n = (float *)malloc(components[1]*components[2]*sizeof(float));
     float complex z;
-    float complex fz;
+    float complex fz;    
     bool flag = true;
 
-    for(int i = 0; i < x[1]; i++){
-        for(int j = 0; j < x[2]; j++){
-            z = row[i] + col[j]*I;
+    for(int i = 0; i < components[1]; i++){
+        for(int j = 0; j < components[2]; j++){
+            z = y[j] + x[i]*I;
             fz = 0;
-            for(int k = 0; k < x[1]; k++){
+            for(int k = 0; k < components[0] && flag; k++){
                 fz = cpowf(fz,2) + z;
-                if(cabsf(fz) >= r){
+                if(cabsf(fz) >= 2){
                     flag = false;
-                    min_n[x[2]*i+j] = k+1;
-                    break;
+                    min_n[components[2]*i+j] = k+1;
                 }
             }
-            if(flag == true){
-                min_n[x[2]*i+j] = x[0];
+            if(flag){
+                min_n[components[2]*i+j] = components[0]; //più veloce questo o int k?
             }else{
                 flag = true;
             }
         }
     }
-
-    printf("\n");
-    for (int i = 0; i < x[1]; i++) {
-        for (int j = 0; j < x[2]; j++) {
-            printf("%2.3f, ", min_n[i * x[2] + j]);
-        }
-        printf("\n");
-    }
-
     return min_n;
 }
