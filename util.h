@@ -1,5 +1,5 @@
-#ifndef _NETPBM_H
-#define _NETPBM_H
+#ifndef _UTIL_H
+#define _UTIL_H
 
 #include <stdlib.h>
 #include <limits.h>

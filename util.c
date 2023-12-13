@@ -3,6 +3,8 @@
 #include <string.h> 
 #include <errno.h>
 
+#include "util.h"
+
 int argv_check(int argc, char * argv[], int * a){
 
     if (argc != 4){
@@ -10,7 +12,7 @@ int argv_check(int argc, char * argv[], int * a){
     }
 
     if (strlen(argv[2]) == 0 || strlen(argv[3]) == 0) {
-        return -2; // empty string
+        return -2;
     }
     char* p;
     errno = 0;
