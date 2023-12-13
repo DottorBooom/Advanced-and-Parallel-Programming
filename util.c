@@ -1,9 +1,8 @@
+// Davide Martinelli SM3201226
 #include <stdlib.h>
 #include <limits.h>
 #include <string.h> 
 #include <errno.h>
-
-#include "util.h"
 
 int argv_check(int argc, char * argv[], int * a){
 

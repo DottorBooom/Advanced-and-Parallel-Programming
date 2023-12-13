@@ -1,10 +1,7 @@
+// Davide Martinelli SM3201226
 #include <stdlib.h>
 #include <complex.h>
-#include <math.h>
 #include <stdbool.h>
-#include <stdio.h>
-
-#include "mandelbrot.h"
 
 float * mandelbrot_set(int * components, float * y, float * x){
 
