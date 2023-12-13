@@ -1,3 +1,4 @@
+// Davide Martinelli SM3201226
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -18,6 +19,7 @@ int main(int argc, char * argv[]){
 
     if(err != 0){
         printf("...program end with error %d.\n",err);
+        free(components);
         return 0;
     }else{
         printf("...values initialized correctly:\n");
@@ -29,6 +31,9 @@ int main(int argc, char * argv[]){
     float * real = linspace(-2,1,components[2]);
     if(real == 0 || imm == 0){
         printf("...program end with error -5.\n");
+        free(real); //Meglio alla fine?
+        free(imm);
+        free(components);
         return 0;
     }
     printf("...arrays line spaced correctly.\n");
