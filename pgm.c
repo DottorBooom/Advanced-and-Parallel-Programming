@@ -1,12 +1,15 @@
+// Davide Martinelli SM3201226
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
 #include <sys/mman.h>
 #include <sys/stat.h>
+#include <math.h>
+#include <stdint.h>
 
 #include "pgm.h"
 
-int open_image(char * path, pgm_ptr img)
+int8_t open_image(char * path, pgm_ptr img)
 {
   img->fd = fopen(path, "r+");
   if (img->fd == NULL) {
@@ -28,7 +31,7 @@ int open_image(char * path, pgm_ptr img)
   return 0;
 }
 
-int empty_image(char * path, pgm_ptr img, int width, int height)
+int8_t empty_image(char * path, pgm_ptr img, int width, int height)
 {
   FILE * fd = fopen(path, "w+");
   if (fd == NULL) {
@@ -57,7 +60,7 @@ char * pixel_at(pgm_ptr img, int x, int y)
   return &img->data[y * img->width + x + img->offset];
 }
 
-int close_image(pgm_ptr img)
+int8_t close_image(pgm_ptr img)
 {
   if (img == NULL) {
     return -11;
@@ -65,4 +68,35 @@ int close_image(pgm_ptr img)
   munmap(img->data, img->size);
   fclose(img->fd);
   return 0;
+}
+
+void print_image(int *components, pgm_ptr image, uint16_t *min_n)
+{
+  #pragma omp parallel for
+  for (int y = 0; y < components[1]/2; y++) {
+    for (int x = 0; x < components[2]; x++) {
+      char * c = pixel_at(image, x, y);
+      char * c_p = pixel_at(image, x, components[1]-1-y); 
+      if (c == NULL) {
+        printf("...error at x = %d y = %d.\n", x, y);
+      }else{
+        if (c_p == NULL) {
+          printf("...error at x = %d y = %d.\n", x, (components[1]/2)-1-y);
+        }else{
+          *c = (int)(255*log(min_n[components[2]*y+x])/(float)log(components[0]));
+          *c_p = (int)(255*log(min_n[components[2]*y+x])/(float)log(components[0]));
+        }
+      }
+    }
+  }
+  if(components[3] == 1){
+    for (int x = 0; x < components[2]; x++) {
+      char * c = pixel_at(image, x, components[1]/2);
+      if (c == NULL) {
+        printf("...error at x = %d y = %d.\n", x, components[1]/2);
+      }else{
+        *c = (int)(255*log(min_n[components[2]*(components[1]/2)+x])/(float)log(components[0]));
+      }
+    }
+  }
 }
