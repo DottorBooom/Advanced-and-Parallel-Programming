@@ -28,6 +28,11 @@ int argv_check(int argc, char * argv[], int * a){
     int arg = arg1;
     a[0] = arg;
     arg = arg2;
+    if(arg%2 == 0){
+        a[3] = 0;
+    }else{
+        a[3] = 1;
+    }
     a[1] = arg;
     a[2] = arg + arg/2;
     return 0;
