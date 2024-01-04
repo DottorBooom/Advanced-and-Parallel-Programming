@@ -6,6 +6,9 @@ Repository dedicated to the course of 'Advanced and Parallel Programming' taught
 It consists of a project divided into 2 parts: 
 + the first part entirely in C, involves calculating values belonging to the Mandelbrot set and drawing its fractal (in grayscale);
 + the second part, entirely in Python, involves receiving an input string in reverse Polish notation and processing the commands within it.
+
+There will be a second folder for the C part containing a more optimized (and uncommented) version but that satisfy less the requirements imposed by the professor. Let me explain further: the mandelbrot library will only handle the calculation of the N-th value of the series, and all the for loops will be done inside the pmg library during image processing.
+
 ## C part
 ### Mandelbrot set 
 The Mandelbrot set is the set of all points in the complex plane (i.e., all c in C) such that the sequence does not go to infinity (i.e., it is bounded). Visualizing the points within and outside the set using different colors produces the well-known fractal figure. Source: https://en.wikipedia.org/wiki/Mandelbrot_set<br /><br />
