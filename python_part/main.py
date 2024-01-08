@@ -31,18 +31,18 @@ class MissingVariableValueException(Exception):
 # Class for the stack
 class Stack:
 
-    def __init__(self): # Costruzione di uno stack vuoto
+    def __init__(self): # Construction of an empty stack
         self.data = []
 
-    def push(self, x):  # Aggiunge elementi allo stack (in coda)
+    def push(self, x):  # Adds elements to the stack (at the end)
         self.data.append(x) 
 
-    def pop(self):      # estraggo un elemento dallo stack
-        if self.data == []:  # Se non vi sono altri elementi, allora lancio un Empty Stack
+    def pop(self):      # Extracts an element from the stack
+        if self.data == []:  # If there are no other elements, then I throw an Empty Stack exception.
             raise EmptyStackException
-        res = self.data[-1]  # Altrimenti, prendo l'ultimo elemento (coda)
-        self.data = self.data[0:-1] # Aggiorno: il contenuto dello stack ora saranno solo gli elementi da 0 a i
-        return res # ritorno l'elemento estratto dallo stack 
+        res = self.data[-1]  # Otherwise, I take the last element (tail).
+        self.data = self.data[0:-1] # The content of the stack now includes only elements from 0 to i.
+        return res # Return the element extracted from the stack.
 
     def is_empty(self):
         if len(self.data) != 0:
@@ -50,13 +50,13 @@ class Stack:
         else:
             return True
 
-    def __str__(self):  # Stampa
+    def __str__(self): 
         return " ".join([str(s) for s in self.data])
 
 # Class that transforms the string into one or more objects that will then be executed.
 class Expression:
 
-    # I initialize the stack.
+    # Initialize the stack.
     def __init__(self):
         self.expression_stack = Stack()
 
@@ -64,14 +64,14 @@ class Expression:
     def from_program(cls, text, dispatch):
         expr = cls()
 
-        # I check the parameters.
+        # Check the correctines of the parameters.
         if type(text) is not str or type(dispatch) is not dict:
             raise WrongInputException
         
-        # I split the string into a list of words.
+        # Split the string into a list of words using " ".
         split_expression = text.split(" ") 
 
-        # I iterate through the list.
+        # Iterate through the list.
         for i in split_expression:
 
             try:
@@ -83,7 +83,7 @@ class Expression:
                 # If it's a string not convertible to a number, I check if it's a known operation.
                 if i in dispatch.keys(): # If it's in the dictionary.
                     args = [] # I initialize the list to be passed as a parameter.
-                    current_operation = dispatch[i]            
+                    current_operation = dispatch[i] # Let's take the class of that keyword from the dictionary           
                     K = current_operation.arity # I save the arity of that class.
 
                     try: # I enter a try block because the elements might not be enough.
@@ -172,7 +172,7 @@ class Constant(Expression):
     def __str__(self):
         return self.value
 
-# Parent class that will then allow the implementation of more specific operations.
+# Parent class that will allow the implementation of more specific operations.
 class Operation(Expression):
 
     def __init__(self, args):
@@ -210,7 +210,7 @@ class QuaternaryOp(Operation):
 # Each of these classes assumes that errors have already been handled externally, 
 # except for errors related to specific operations, which will be handled by internal Python exceptions. 
 # I don't think I need to comment on the classes because they are very simple and intuitive, 
-# and they perfectly follow the explanation provided in the PDF."
+# and they perfectly follow the explanation provided in the PDF.
 
 class Addition(BinaryOp):
     
@@ -389,6 +389,7 @@ class Setq(BinaryOp):
 
     def op(self, args, env):
         env[args[0].__str__()] = args[1].evaluate(env)
+        return env[args[0].__str__()]
 
     def __str__(self):
         return f"set {self.args[0].__str__()} = {self.args[1].__str__()}"
@@ -397,6 +398,7 @@ class Setv(TernaryOp):
 
     def op(self, args, env):
         env[args[0].__str__()][args[1].evaluate(env)] = args[2].evaluate(env)
+        return env[args[0].__str__()][args[1].evaluate(env)]
 
     def __str__(self):
         return f"set {self.args[0].__str__()}[{self.args[1].__str__()}] = {self.args[2].__str__()}"
@@ -487,7 +489,7 @@ def main():
         "print" : Print, "if" : IF, "while" : While, "for" : For, "setq" : Setq, "setv" : Setv, "alloc" : Alloc, "valloc" : vAlloc, 
         "prog2" : Prog2, "prog3" : Prog3, "prog4" : Prog4, "nop" : Nop, "defsub" : DefSub, "call" : Call}
 
-    example = "x abs 2 ** -5 x setq x alloc prog3"
+    example = "x print f call x alloc x 4 + x setq f defsub prog4"
 
     e = Expression.from_program(example, d)
     print(e)
