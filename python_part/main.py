@@ -1,6 +1,8 @@
 # Davide Martinelli SM3201226
 
-# Excpetion #
+#########################################################
+#                      Exception                        #
+#########################################################
 
 # An approach of handling exceptions at the outermost level has been chosen. 
 # In short, when an error is handled, it results in a series of 1, 2, or 3 cascading exceptions, 
@@ -8,14 +10,6 @@
 
 # Exception for an empty stack.
 class EmptyStackException(Exception):
-    pass
-
-# Exception for when the user enters incorrect input.
-class WrongInputException(Exception):
-    pass
-
-# Exception for when the user is missing a parameter.
-class MissingParameterException(Exception):
     pass
 
 # Exception for when a variable has not been initialized in the environment.
@@ -26,7 +20,9 @@ class MissingVariableException(Exception):
 class MissingVariableValueException(Exception):
     pass
 
-# Program body #
+#########################################################
+#                     Program body                      #
+#########################################################
 
 # Class for the stack
 class Stack:
@@ -65,20 +61,29 @@ class Expression:
         expr = cls()
 
         # Check the correctines of the parameters.
-        if type(text) is not str or type(dispatch) is not dict:
-            raise WrongInputException
-        
+        if type(text) is not str:
+            print(f"The parameter text was not a str object, value given {text}")
+            return None
+
+        if type(dispatch) is not dict:
+            print(f"The parametre dispatch was not a dict object, value given {dispatch}")
+            return None
+
         # Split the string into a list of words using " ".
         split_expression = text.split(" ") 
-
         # Iterate through the list.
         for i in split_expression:
+            
+            if i == "":
+                print(f"Error in the spacing of the string, text splitted {split_expression}")
+                return None
 
             try:
                 # If I can turn that word into an integer, I save it as a constant class.
-                int_i = int(i)
-                saved = Constant(int_i)
-
+                if  i.isdigit():
+                    saved = Constant(int(i))
+                else:
+                    saved = Constant(float(i))
             except:
                 # If it's a string not convertible to a number, I check if it's a known operation.
                 if i in dispatch.keys(): # If it's in the dictionary.
@@ -94,9 +99,26 @@ class Expression:
                         # I can then push the result of that operation onto the stack.
                         saved = current_operation(args) # I simply pass the list of elements as a parameter.
                         
-                    except:
-                        raise MissingParameterException
+                    except EmptyStackException:
+                        print(f"Missing parametre during the computation of {current_operation}")
+                        return None
+                    
+                elif i[0:4] == "prog":
+                    args = []
+                    current_operation = Prog
+                    K = int(i[4:])
 
+                    try: # I enter a try block because the elements might not be enough.
+                        for i in range(K): # For as many times as it requires elements.
+                            element = expr.expression_stack.pop() # I remove them from the stack.
+                            args.append(element) # And I put them in the list.
+                        
+                        # I can then push the result of that operation onto the stack.
+                        saved = current_operation(args) # I simply pass the list of elements as a parameter.
+                        
+                    except EmptyStackException:
+                        print(f"Missing parametre during the computation of {current_operation}")
+                        return None
                 else:
                     # If the string is not an operation, then it is a variable.
                     saved = Variable(i)
@@ -116,16 +138,24 @@ class Expression:
         # If the intention is, however, precisely this, just remove the push from the for loop.
 
         if type(env) is not dict:
-            raise WrongInputException
+            print("A non-dictionary object was passed as parameter")
+            return None
         value = 0
         elem = []
-        while not self.expression_stack.is_empty():
-            i = self.expression_stack.pop()
-            elem.append(i)
-        for i in elem:
-            value = i.evaluate(env)
-            self.expression_stack.push(i)
-        return value
+        i = None
+        try:
+            while not self.expression_stack.is_empty():
+                i = self.expression_stack.pop()
+                elem.append(i)
+            for i in elem:
+                value = i.evaluate(env)
+                self.expression_stack.push(i)
+            return value
+        except MissingVariableException:
+            print(f"A variable was missing during the execution of {i}\nCheck if prog was used correctly or if set/alloc wasn't used")
+            return None
+        except MissingVariableValueException:
+            print(f"A variable value was missing during the execution of {i}\nCheck if all the values given were initialized")
         
     
     def __str__(self):
@@ -170,7 +200,11 @@ class Constant(Expression):
         return self.value
 
     def __str__(self):
-        return self.value
+        return str(self.value)
+
+#########################################################
+#                      Operation                        #
+#########################################################
 
 # Parent class that will allow the implementation of more specific operations.
 class Operation(Expression):
@@ -189,8 +223,6 @@ class Operation(Expression):
 
     def __str__(self):
         pass
-
-# Operations#
 
 class NonaryOp(Operation):
     arity = 0 # arità della classe
@@ -359,7 +391,7 @@ class IF(TernaryOp):
             return args[2].evaluate(env)
 
     def __str__(self):
-        return f"if {self.args[0].__str__()}[\n  {self.args[1].__str__()}\n]else[\n  {self.args[2].__str__()}]"
+        return f"if {self.args[0].__str__()}\n{self.args[1].__str__()}\nelse\n{self.args[2].__str__()}"
 
 class While(BinaryOp):
     
@@ -368,7 +400,7 @@ class While(BinaryOp):
             args[1].evaluate(env)
 
     def __str__(self):
-        return f"while {self.args[0].__str__()}[\n{self.args[1].__str__()}]"
+        return "while"+self.args[0].__str__()+"\n{\n"+self.args[1].__str__()+"\n}"
 
 class For(QuaternaryOp):
     
@@ -383,7 +415,7 @@ class For(QuaternaryOp):
             args[3].evaluate(env)
 
     def __str__(self):
-        return f"for {self.args[0].__str__()} in range({self.args[1].__str__()},{self.args[2].__str__()})[\n{self.args[3].__str__()}]"
+        return "for "+self.args[0].__str__()+" in range("+self.args[1].__str__()+","+self.args[2].__str__()+")\n{\n"+self.args[3].__str__()+"\n}"
 
 class Setq(BinaryOp):
 
@@ -419,36 +451,20 @@ class vAlloc(BinaryOp):
     def __str__(self):
         return f"valloc {self.args[0].__str__()}[{self.args[1].__str__()}] = [0]"
 
-class Prog2(BinaryOp):
+class Prog(Operation):
 
     def op(self, args, env):
-        args[0].evaluate(env)
-        return args[1].evaluate(env)
-
-    def __str__(self):
-        return f"prog2 [\n{self.args[0].__str__()}\n{self.args[1].__str__()}]"
+        for i in range(len(args)-1):
+            args[i].evaluate(env)
+        return args[-1].evaluate(env)
     
-class Prog3(TernaryOp):
-
-    def op(self, args, env):
-        args[0].evaluate(env)
-        args[1].evaluate(env)
-        return args[2].evaluate(env)
-
     def __str__(self):
-        return f"prog3 [\n{self.args[0].__str__()}\n{self.args[1].__str__()}\n{self.args[2].__str__()}]"
-    
-class Prog4(QuaternaryOp):
+        str = "prog4\n{"
+        for i in range(len(self.args)):
+            str += "\n" + self.args[i].__str__()
+        str += "\n}"
+        return str
 
-    def op(self, args, env):
-        args[0].evaluate(env)
-        args[1].evaluate(env)
-        args[2].evaluate(env)
-        return args[3].evaluate(env)
-
-    def __str__(self):
-        return f"prog4 [\n{self.args[0].__str__()}\n{self.args[1].__str__()}\n{self.args[2].__str__()}\n{self.args[3].__str__()}]"
-    
 class Nop(NonaryOp):
 
     def op(self, args, env):
@@ -483,18 +499,27 @@ class Call(UnaryOp):
     def __str__(self):
         return f"call {self.args[0].__str__()}"
 
+#########################################################
+#                      Main body                        #
+#########################################################
+
 def main():
     d = {"+" : Addition, "*" : Multiplication, "-" : Subtraction, "/" : Division, "%" : Modulus, "1/": Reciprocal, "abs": AbsoluteValue, "**": Power, 
         ">" : GratherThan, ">=" : GratherEqualThan, "<" : LessThan, "<=" : LessEqualThan, "=" : Equal, "!=" : NotEqual, 
-        "print" : Print, "if" : IF, "while" : While, "for" : For, "setq" : Setq, "setv" : Setv, "alloc" : Alloc, "valloc" : vAlloc, 
-        "prog2" : Prog2, "prog3" : Prog3, "prog4" : Prog4, "nop" : Nop, "defsub" : DefSub, "call" : Call}
+        "if" : IF, "while" : While, "for" : For, "setq" : Setq, "setv" : Setv, "alloc" : Alloc, "valloc" : vAlloc, 
+        "print" : Print, "nop" : Nop, "defsub" : DefSub, "call" : Call}
 
-    example = "x print f call x alloc x 4 + x setq f defsub prog4"
+    # Change this string for a different program
+    example = "num1 print num2 num1 % num2 setq hold num1 setq num1 hold setq prog4 0 num2 != while hold alloc 6 num2 setq 12 num1 setq prog4"
+    # Change this dictionary for manually insert value in the expression
+    values = {}
 
     e = Expression.from_program(example, d)
+    if e is None: # If it's none, it means something went wront during the computation of the string
+        return
     print(e)
-    res = e.evaluate(dict())
-    print(res)
+    res = e.evaluate(values) 
+    print(f"The return value is : {res}")
 
 if __name__ == "__main__":
-    main()
+    main() 
