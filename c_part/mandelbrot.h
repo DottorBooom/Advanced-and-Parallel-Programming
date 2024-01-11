@@ -9,6 +9,6 @@
 
 uint16_t * mandelbrot_set(int * components, float * y, float * x);
 
-uint16_t abs_check(float complex z, float complex fz, uint16_t M);
+uint16_t abs_check(float complex c, uint16_t M);
 
 #endif
